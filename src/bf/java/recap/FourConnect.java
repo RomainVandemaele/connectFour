@@ -79,26 +79,26 @@ public class FourConnect {
         int i=0;
         while(!end && i < SIZE) {
             //end = checkLine(i);
-            end = checkdiag(i,0,0,1);
+            end = checkLine(i);
             ++i;
         }
         i=0;
         while(!end && i < SIZE) {
-            end = checkdiag(0,i,1,0);
+            end = checkColumn(i);
             ++i;
         }
         i=0;
         int j = 0;
         while(!end && j < SIZE) {
-            if(j < SIZE- MIN_CHAIN + 1) {end = checkdiag(i,j,1,1);}
-            if(!end && j > SIZE - MIN_CHAIN -1) {end = checkdiag(i,j,1,-1);}
+            if(j < SIZE- MIN_CHAIN + 1) {end = checkDirection(i,j,1,1);}
+            if(!end && j > SIZE - MIN_CHAIN -1) {end = checkDirection(i,j,1,-1);}
             ++j;
         }
         i=SIZE-1;
         j=0;
         while(!end && j < SIZE) {
-            if(j < SIZE- MIN_CHAIN + 1) {end = checkdiag(i,j,-1,1);}
-            if(!end && j > SIZE - MIN_CHAIN -1) {end = checkdiag(i,j,-1,-1);}
+            if(j < SIZE- MIN_CHAIN + 1) {end = checkDirection(i,j,-1,1);}
+            if(!end && j > SIZE - MIN_CHAIN -1) {end = checkDirection(i,j,-1,-1);}
             ++j;
         }
 
@@ -107,37 +107,13 @@ public class FourConnect {
     }
 
     public static boolean checkLine(int line) {
-        int chain = 1;
-        int col = 1;
-        while(col < SIZE && chain < 4) {
-            if(board[line][col]=='-') {
-                chain=0;
-            }else if( (board[line][col-1]=='Y' || board[line][col-1]=='R') && board[line][col]==board[line][col-1]) {
-                chain++;
-            }else if((board[line][col]=='Y' || board[line][col]=='R') && board[line][col]!=board[line][col-1]) {
-                chain = 1;
-            }
-            col++;
-        }
-        return chain==MIN_CHAIN;
+        return checkDirection(line,0,0,1);
     }
 
     public static boolean checkColumn(int col) {
-        int chain = 1;
-        int line = 1;
-        while(line < SIZE && chain < 4) {
-            if(board[line][col]=='-') {
-                chain=0;
-            }else if( (board[line-1][col]=='Y' || board[line-1][col]=='R') && board[line][col]==board[line-1][col]) {
-                chain++;
-            }else if((board[line][col]=='Y' || board[line][col]=='R') && board[line][col]!=board[line-1][col]) {
-                chain = 1;
-            }
-            line++;
-        }
-        return chain==MIN_CHAIN;
+        return checkDirection(0,col,1,0);
     }
-    public static boolean checkdiag(int i,int j,int stepI,int stepJ) {
+    public static boolean checkDirection(int i, int j, int stepI, int stepJ) {
         int chain = 1;
         i +=stepI;
         j +=stepJ;
