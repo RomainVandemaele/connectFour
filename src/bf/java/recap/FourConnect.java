@@ -78,7 +78,6 @@ public class FourConnect {
 
         int i=0;
         while(!end && i < SIZE) {
-            //end = checkLine(i);
             end = checkLine(i);
             ++i;
         }
@@ -113,11 +112,12 @@ public class FourConnect {
     public static boolean checkColumn(int col) {
         return checkDirection(0,col,1,0);
     }
+
     public static boolean checkDirection(int i, int j, int stepI, int stepJ) {
         int chain = 1;
         i +=stepI;
         j +=stepJ;
-        while(chain< 4 &&  i>=0 && i<SIZE &&  j>=0 && j < SIZE) {
+        while(chain< MIN_CHAIN &&  i>=0 && i<SIZE &&  j>=0 && j < SIZE) {
             if(board[i][j]=='-') {
                 chain=0;
             }else if( (board[i][j]=='Y' || board[i][j]=='R') && board[i][j] == board[i-stepI][j-stepJ]) {
@@ -137,11 +137,9 @@ public class FourConnect {
         Scanner input = new Scanner(System.in);
         while (replay) {
             initBoard();
-            System.out.println(PLAYER.YELLOW);
             turn = YELLOW;
             while(!hasGameEnded()) {
                 displayBoard();
-
                 System.out.printf("Player %s choose a column to put your piece :\n",turn);
                 int column = -1;
                 while(!input.hasNext("[1-7]")) {
@@ -160,9 +158,9 @@ public class FourConnect {
             System.out.println("Final board");
             displayBoard();
             if(turn==YELLOW) {
-                System.out.println("Contratulation to RED\n");
+                System.out.println("Congratulation to RED\n");
             }else {
-                System.out.println("Contratulation to YELLOW\n");
+                System.out.println("Congratulation to YELLOW\n");
             }
             System.out.println("Do you want to replay ? Y/N");
             while(!input.hasNext("[YN]")) {
