@@ -10,17 +10,11 @@ public class FourConnect {
     public static int MIN_CHAIN = 4;
 
     public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
 
     private static char[][] board;
-    private static final int SIZE = 7;
+    private static final int BOARD_SIZE = 7;
 
     static enum PLAYER {
         RED,YELLOW
@@ -28,25 +22,27 @@ public class FourConnect {
 
     private static PLAYER turn = RED;
 
+    public static final Scanner INPUT = new Scanner(System.in);
+
     private static void initBoard() {
-        board = new char[SIZE][];
-        for (int i=0;i<SIZE;++i) {
-            board[i] = new char[SIZE];
-            for (int j=0;j<SIZE;++j) {
+        board = new char[BOARD_SIZE][];
+        for (int i = 0; i< BOARD_SIZE; ++i) {
+            board[i] = new char[BOARD_SIZE];
+            for (int j = 0; j< BOARD_SIZE; ++j) {
                 board[i][j] = '-';
             }
         }
     }
 
     private static void displayBoard() {
-        for (int i=SIZE-1;i>=0;i--) {
-            for (int j=0;j<SIZE;++j) {
+        for (int i = BOARD_SIZE -1; i>=0; i--) {
+            for (int j = 0; j< BOARD_SIZE; ++j) {
                 if(board[i][j]=='Y') {
-                    System.out.print(ANSI_YELLOW +  board[i][j]+" " + ANSI_RESET); ;
+                    System.out.print(ANSI_YELLOW +  board[i][j]+" " + ANSI_RESET);
                 } else if (board[i][j]=='R') {
-                    System.out.print(ANSI_RED +  board[i][j]+" " + ANSI_RESET); ;
+                    System.out.print(ANSI_RED +  board[i][j]+" " + ANSI_RESET);
                 }else {
-                    System.out.print(board[i][j]+" "); ;
+                    System.out.print(board[i][j]+" ");
                 }
             }
             System.out.println();
@@ -54,54 +50,48 @@ public class FourConnect {
     }
 
     private static boolean putJeton(int column) {
-        boolean moveOk = true;
+        boolean moveOk = false;
         int line=0;
-        while(line < SIZE && board[line][column]!='-') {
+        while(line < BOARD_SIZE && board[line][column]!='-') {
             ++line;
         }
-        if(line<SIZE) {
+        if(line< BOARD_SIZE) {
             if(turn==YELLOW) {
                 board[line][column] = 'Y';
             }else {
                 board[line][column] = 'R';
             }
-
-        }else {
-            System.out.println("Column already full");
-            moveOk = false;
+            moveOk = true;
         }
         return moveOk;
     }
 
     public static boolean hasGameEnded() {
         boolean end = false;
-
-        int i=0;
-        while(!end && i < SIZE) {
-            end = checkLine(i);
-            ++i;
+        int line=0;
+        int col = 0;
+        while(!end && line < BOARD_SIZE) {
+            end = checkLine(line);
+            ++line;
         }
-        i=0;
-        while(!end && i < SIZE) {
-            end = checkColumn(i);
-            ++i;
+        while(!end && col < BOARD_SIZE) {
+            end = checkColumn(col);
+            ++col;
         }
-        i=0;
-        int j = 0;
-        while(!end && j < SIZE) {
-            if(j < SIZE- MIN_CHAIN + 1) {end = checkDirection(i,j,1,1);}
-            if(!end && j > SIZE - MIN_CHAIN -1) {end = checkDirection(i,j,1,-1);}
-            ++j;
+        line=0;
+        col =0;
+        while(!end && col < BOARD_SIZE) {
+            if(col < BOARD_SIZE - MIN_CHAIN + 1) {end = checkDirection(line,col,1,1);}
+            if(!end && col > BOARD_SIZE - MIN_CHAIN -1) {end = checkDirection(line,col,1,-1);}
+            ++col;
         }
-        i=SIZE-1;
-        j=0;
-        while(!end && j < SIZE) {
-            if(j < SIZE- MIN_CHAIN + 1) {end = checkDirection(i,j,-1,1);}
-            if(!end && j > SIZE - MIN_CHAIN -1) {end = checkDirection(i,j,-1,-1);}
-            ++j;
+        line= BOARD_SIZE -1;
+        col=0;
+        while(!end && col < BOARD_SIZE) {
+            if(col < BOARD_SIZE - MIN_CHAIN + 1) {end = checkDirection(line,col,-1,1);}
+            if(!end && col > BOARD_SIZE - MIN_CHAIN -1) {end = checkDirection(line,col,-1,-1);}
+            ++col;
         }
-
-
         return end;
     }
 
@@ -117,12 +107,12 @@ public class FourConnect {
         int chain = 1;
         i +=stepI;
         j +=stepJ;
-        while(chain< MIN_CHAIN &&  i>=0 && i<SIZE &&  j>=0 && j < SIZE) {
+        while(chain< MIN_CHAIN &&  i>=0 && i< BOARD_SIZE &&  j>=0 && j < BOARD_SIZE) {
             if(board[i][j]=='-') {
                 chain=0;
             }else if( (board[i][j]=='Y' || board[i][j]=='R') && board[i][j] == board[i-stepI][j-stepJ]) {
                 chain++;
-            }else if( (board[i-stepI][j-stepJ]=='Y' || board[i-stepI][j-stepJ]=='R') && board[i][j] != board[i-stepI][j-stepJ]  ) {
+            }else if( (board[i][j]=='Y' || board[i][j]=='R') && board[i][j] != board[i-stepI][j-stepJ]  ) {
                 chain = 1;
             }
             i+=stepI;
@@ -131,48 +121,73 @@ public class FourConnect {
         return chain==MIN_CHAIN;
     }
 
+    public static void playTurn() {
+        displayBoard();
+        System.out.printf("Player %s choose a column to put your piece :\n",turn);
+        while(!INPUT.hasNext("[1-7]")) {
+            INPUT.next();
+        }
+        int column = INPUT.nextInt()-1;
+        boolean isMovePossible = putJeton(column);
+        if(isMovePossible) {
+           switchPlayer();
+        }else {
+            System.out.println("Column already full. Replay\n");
+        }
+    }
+
+    public static void switchPlayer() {
+        if(turn==YELLOW) {turn = RED;}
+        else {turn = YELLOW;}
+    }
+    
+    public static boolean askReplay() {
+        boolean replay = true;
+        System.out.println("Do you want to replay ? Y/N");
+        while(!INPUT.hasNext("[YN]")) {
+            System.out.println("A valid option please.\n");
+            INPUT.next();
+        }
+        String answer =  INPUT.next();
+        if(answer.charAt(0)=='N') {
+            replay = false;
+        }
+        return replay;
+    }
+
+    public static boolean isBoardFull() {
+        boolean isFull = true;
+        int i =0;
+        while (isFull && i<BOARD_SIZE*BOARD_SIZE) {
+            int line = i/BOARD_SIZE;
+            int col = i%BOARD_SIZE;
+            isFull = !(board[line][col]=='-');
+            ++i;
+        }
+        return isFull;
+    }
+
+    public static void endGame() {
+        System.out.println("Final board : ");
+        displayBoard();
+        if (!isBoardFull()) {
+            switchPlayer();
+            System.out.printf("Congratulation to %s\n",turn);
+        }else {
+            System.out.println("Game ended because the board is full\n");
+        }
+    }
+
     public static void main(String[] args) {
         initBoard();
         boolean replay = true;
-        Scanner input = new Scanner(System.in);
         while (replay) {
             initBoard();
-            turn = YELLOW;
-            while(!hasGameEnded()) {
-                displayBoard();
-                System.out.printf("Player %s choose a column to put your piece :\n",turn);
-                int column = -1;
-                while(!input.hasNext("[1-7]")) {
-                    input.next();
-                }
-                column = input.nextInt()-1;
-                boolean res = putJeton(column);
-                if(res) {
-                    if(turn==YELLOW) {
-                        turn = RED;
-                    }else {
-                        turn = YELLOW;
-                    }
-                }
+            while(!hasGameEnded() && !isBoardFull()) {
+                playTurn();
             }
-            System.out.println("Final board");
-            displayBoard();
-            if(turn==YELLOW) {
-                System.out.println("Congratulation to RED\n");
-            }else {
-                System.out.println("Congratulation to YELLOW\n");
-            }
-            System.out.println("Do you want to replay ? Y/N");
-            while(!input.hasNext("[YN]")) {
-                System.out.println("A valid option please.\n");
-                input.next();
-            }
-            String answer =  input.next();
-            if(answer.charAt(0)=='N') {
-                replay = false;
-            }
+            endGame();
+            replay = askReplay();
         }
-
-
     }
 }
