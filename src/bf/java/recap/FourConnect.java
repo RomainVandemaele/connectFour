@@ -18,6 +18,7 @@ public class FourConnect {
 
     static enum PLAYER {
         RED,YELLOW
+        
     }
 
     private static PLAYER turn = RED;
